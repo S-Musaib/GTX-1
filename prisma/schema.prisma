@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  password      String?
+  image         String?
+  credits       Int           @default(0)
+  role          Role          @default(USER)
+  downloads     Download[]
+  favorites     Favorite[]
+  transactions  Transaction[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Asset {
+  id            String     @id @default(cuid())
+  title         String
+  description   String?
+  imageUrl      String
+  fileUrl       String
+  fileType      String
+  category      Category   @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  tags          Tag[]
+  isPremium     Boolean    @default(false)
+  creditCost    Int        @default(0)
+  downloads     Download[]
+  favorites     Favorite[]
+  downloadCount Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Category {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  slug   String  @unique
+  icon   String?
+  assets Asset[]
+}
+
+model Tag {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  assets Asset[]
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  assetId   String
+  credits   Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  assetId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, assetId])
+}
+
+model Transaction {
+  id        String          @id @default(cuid())
+  user      User            @relation(fields: [userId], references: [id])
+  userId    String
+  type      TransactionType
+  credits   Int
+  amount    Float?
+  stripeId  String?
+  createdAt DateTime        @default(now())
+}
+
+enum TransactionType {
+  PURCHASE
+  SPEND
+  BONUS
+}
