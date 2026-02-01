@@ -1,12 +1,10 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import { Toaster } from '@/components/ui/toaster'
-
-const inter = Inter({ subsets: ['latin'] })
+import { Providers } from '@/components/providers'
 
 export const metadata: Metadata = {
-  title: 'Creative Assets Platform',
+  title: 'CreativeHub - Creative Assets Platform',
   description: 'Browse, search, and download creative design assets',
 }
 
@@ -17,9 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Toaster />
+      <body className="font-sans">
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   )
