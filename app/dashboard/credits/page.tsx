@@ -7,13 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { Coins, Check } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-
-const creditPackages = [
-  { credits: 10, price: 9.99, popular: false },
-  { credits: 50, price: 39.99, popular: true },
-  { credits: 100, price: 69.99, popular: false },
-  { credits: 250, price: 149.99, popular: false },
-]
+import { CREDIT_PACKAGES } from '@/lib/stripe'
 
 export default function CreditsPage() {
   const { data: session } = useSession()
@@ -60,53 +54,56 @@ export default function CreditsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {creditPackages.map((pkg) => (
-          <Card
-            key={pkg.credits}
-            className={`relative ${pkg.popular ? 'border-primary shadow-lg' : ''}`}
-          >
-            {pkg.popular && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                  Most Popular
-                </span>
-              </div>
-            )}
-            <CardHeader className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-primary/10 rounded-full">
-                  <Coins className="h-8 w-8 text-primary" />
+        {CREDIT_PACKAGES.map((pkg, index) => {
+          const isPopular = index === 1 // Make the second package (50 credits) popular
+          return (
+            <Card
+              key={pkg.credits}
+              className={`relative ${isPopular ? 'border-primary shadow-lg' : ''}`}
+            >
+              {isPopular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
+                    Most Popular
+                  </span>
                 </div>
-              </div>
-              <CardTitle>{pkg.credits} Credits</CardTitle>
-              <CardDescription>
-                <span className="text-3xl font-bold text-foreground">
-                  ${pkg.price}
-                </span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="w-full"
-                variant={pkg.popular ? 'default' : 'outline'}
-                onClick={() => handlePurchase(pkg.credits)}
-                disabled={loading !== null}
-              >
-                {loading === pkg.credits ? 'Processing...' : 'Purchase'}
-              </Button>
-              <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  <span>${(pkg.price / pkg.credits).toFixed(2)} per credit</span>
+              )}
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-primary/10 rounded-full">
+                    <Coins className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  <span>Never expires</span>
+                <CardTitle>{pkg.credits} Credits</CardTitle>
+                <CardDescription>
+                  <span className="text-3xl font-bold text-foreground">
+                    ${pkg.price}
+                  </span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  className="w-full"
+                  variant={isPopular ? 'default' : 'outline'}
+                  onClick={() => handlePurchase(pkg.credits)}
+                  disabled={loading !== null}
+                >
+                  {loading === pkg.credits ? 'Processing...' : 'Purchase'}
+                </Button>
+                <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-primary" />
+                    <span>${(pkg.price / pkg.credits).toFixed(2)} per credit</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-primary" />
+                    <span>Never expires</span>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
 
       <Card>

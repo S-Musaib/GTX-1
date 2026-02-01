@@ -5,9 +5,9 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy
   typescript: true,
 })
 
-export const CREDIT_PACKS = [
-  { credits: 10, price: 2, priceId: 'price_10credits' },
-  { credits: 50, price: 8, priceId: 'price_50credits' },
-  { credits: 100, price: 15, priceId: 'price_100credits' },
-  { credits: 500, price: 60, priceId: 'price_500credits' },
+export const CREDIT_PACKAGES = [
+  { credits: 10, price: 9.99 },
+  { credits: 50, price: 39.99 },
+  { credits: 100, price: 69.99 },
+  { credits: 250, price: 149.99 },
 ]

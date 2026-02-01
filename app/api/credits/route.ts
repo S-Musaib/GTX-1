@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { stripe } from '@/lib/stripe'
+import { stripe, CREDIT_PACKAGES } from '@/lib/stripe'
 
 export async function GET(req: Request) {
   try {
@@ -43,17 +43,10 @@ export async function POST(req: Request) {
 
     const { credits } = await req.json()
 
-    // Credit packages
-    const packages: { [key: number]: number } = {
-      10: 9.99,
-      50: 39.99,
-      100: 69.99,
-      250: 149.99,
-    }
+    // Find matching package
+    const packageData = CREDIT_PACKAGES.find(pkg => pkg.credits === credits)
 
-    const amount = packages[credits]
-
-    if (!amount) {
+    if (!packageData) {
       return NextResponse.json(
         { error: 'Invalid credit package' },
         { status: 400 }
@@ -71,7 +64,7 @@ export async function POST(req: Request) {
               name: `${credits} Credits`,
               description: 'CreativeHub Credits',
             },
-            unit_amount: Math.round(amount * 100),
+            unit_amount: Math.round(packageData.price * 100),
           },
           quantity: 1,
         },
