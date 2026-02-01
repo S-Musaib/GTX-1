@@ -10,18 +10,21 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: { slug: string }
-  searchParams: any
+  params: Promise<{ slug: string }>
+  searchParams: Promise<any>
 }) {
+  const { slug } = await params
+  const searchParamsResolved = await searchParams
+  
   const category = await prisma.category.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!category) {
     notFound()
   }
 
-  const page = parseInt(searchParams.page || '1')
+  const page = parseInt(searchParamsResolved.page || '1')
   const limit = 12
 
   const [assets, total] = await Promise.all([

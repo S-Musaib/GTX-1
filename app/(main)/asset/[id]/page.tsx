@@ -5,10 +5,11 @@ import AssetDetailClient from '@/components/assets/asset-detail-client'
 export default async function AssetDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const asset = await prisma.asset.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       category: true,
       tags: true,
