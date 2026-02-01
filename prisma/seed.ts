@@ -6,7 +6,11 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Starting seed...')
 
-  // Create admin user
+  // NOTE: These are DEVELOPMENT-ONLY credentials
+  // DO NOT use these credentials in production environments
+  // Change passwords and use secure credentials for production
+  
+  // Create admin user (DEV ONLY: admin@example.com / admin123)
   const adminPassword = await bcrypt.hash('admin123', 12)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
@@ -22,7 +26,7 @@ async function main() {
 
   console.log('Admin user created:', admin.email)
 
-  // Create regular users
+  // Create regular users (DEV ONLY: user@example.com / user123)
   const userPassword = await bcrypt.hash('user123', 12)
   const user = await prisma.user.upsert({
     where: { email: 'user@example.com' },

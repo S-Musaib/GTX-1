@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   if (!signature) {
     return NextResponse.json(
-      { error: 'No signature' },
+      { error: 'Missing Stripe signature header in webhook request' },
       { status: 400 }
     )
   }
